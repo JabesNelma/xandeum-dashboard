@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,22 +25,55 @@ import {
 } from "@/components/ui/table";
 import { XandeumPNode } from "@/types/xandeum";
 
+// Helper function to format uptime
+function formatUptime(seconds: number | undefined): string {
+  if (!seconds || seconds === 0) return 'N/A';
+  
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
+  
+  return parts.length > 0 ? parts.join(' ') : '< 1m';
+}
+
+// Helper function to truncate public key
+function truncatePubkey(pubkey: string): string {
+  if (pubkey.length <= 12) return pubkey;
+  return pubkey.slice(0, 12) + '...';
+}
+
 // Definisi kolom untuk DataTable
 const columns: ColumnDef<XandeumPNode>[] = [
   {
     accessorKey: "pubkey",
     header: "Public Key",
-    cell: ({ row }) => <div className="font-mono text-sm break-all text-slate-700">{row.getValue("pubkey")}</div>,
+    cell: ({ row }) => {
+      const pubkey = row.getValue("pubkey") as string;
+      return (
+        <div className="font-mono text-sm text-slate-700 max-w-[20rem] truncate" title={pubkey}>
+          {truncatePubkey(pubkey)}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "ip",
     header: "IP Address",
-    cell: ({ row }) => <div className="font-mono text-sm text-slate-600">{row.getValue("ip")}</div>,
+    cell: ({ row }) => (
+      <div className="font-mono text-sm text-slate-600 max-w-[12rem] truncate" title={String(row.getValue("ip"))}>
+        {row.getValue("ip")}
+      </div>
+    ),
   },
   {
     accessorKey: "version",
     header: "Version",
-    cell: ({ row }) => <div>{row.getValue("version")}</div>,
+    cell: ({ row }) => <div className="text-sm">{row.getValue("version")}</div>,
   },
   {
     accessorKey: "status",
@@ -48,37 +81,58 @@ const columns: ColumnDef<XandeumPNode>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       let statusColor = "bg-slate-400"; // Default muted
-      if (status === 'active') statusColor = "bg-emerald-400";
-      if (status === 'inactive') statusColor = "bg-red-400";
-      if (status === 'syncing') statusColor = "bg-amber-400";
+      let badgeColor = "bg-slate-100 text-slate-600"; // Default badge
+      if (status === 'active') {
+        statusColor = "bg-emerald-500";
+        badgeColor = "bg-emerald-100 text-emerald-800";
+      }
+      if (status === 'inactive') {
+        statusColor = "bg-red-500";
+        badgeColor = "bg-red-100 text-red-800";
+      }
+      if (status === 'syncing') {
+        statusColor = "bg-amber-500";
+        badgeColor = "bg-amber-100 text-amber-800";
+      }
 
       return (
         <div className="flex items-center">
-          <div className={`h-2 w-2 rounded-full mr-2 ${statusColor}`} />
-          <div className="text-sm text-slate-600 capitalize">{status}</div>
+          <div className={`h-2.5 w-2.5 rounded-full mr-3 ${statusColor} ring-1 ring-slate-100`} aria-hidden />
+          <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${badgeColor}`}>
+            {status}
+          </span>
         </div>
       );
     },
   },
   {
     accessorKey: "uptime",
-    header: "Uptime (s)",
-    cell: ({ row }) => <div>{row.getValue("uptime")}</div>,
+    header: "Uptime",
+    cell: ({ row }) => {
+      const uptime = row.getValue("uptime") as number;
+      return <div className="text-sm">{formatUptime(uptime)}</div>;
+    },
   },
   {
     accessorKey: "blocksProduced",
     header: "Blocks Produced",
-    cell: ({ row }) => <div>{row.getValue("blocksProduced")}</div>,
+    cell: ({ row }) => {
+      const blocks = row.getValue("blocksProduced") as number;
+      return <div className="text-sm tabular-nums">{blocks?.toLocaleString() || 0}</div>;
+    },
   },
   {
     accessorKey: "latency",
     header: "Latency (ms)",
-    cell: ({ row }) => <div>{row.getValue("latency")}</div>,
+    cell: ({ row }) => {
+      const latency = row.getValue("latency") as number;
+      return <div className="text-sm tabular-nums">{latency?.toLocaleString() || 'N/A'}</div>;
+    },
   },
   {
     accessorKey: "location",
     header: "Location",
-    cell: ({ row }) => <div>{row.getValue("location") || 'N/A'}</div>,
+    cell: ({ row }) => <div className="text-sm">{row.getValue("location") || 'N/A'}</div>,
   },
 ];
 
@@ -129,14 +183,14 @@ export function NodeTable({ data }: NodeTableProps) {
           className="max-w-sm"
         />
       </div>
-      <div className="rounded-md border shadow-sm overflow-hidden">
+      <div className="rounded-md border border-slate-200 shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-slate-50/20">
+              <TableRow key={headerGroup.id} className="bg-slate-50">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-xs uppercase tracking-wide text-slate-500 font-medium">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -192,7 +246,7 @@ export function NodeTable({ data }: NodeTableProps) {
         </Table>
       </div>
       {/* Pagination */}
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="node-table-pagination flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
           size="sm"
@@ -209,7 +263,7 @@ export function NodeTable({ data }: NodeTableProps) {
         >
           Next
         </Button>
-      </div>
+      </div> 
     </div>
   );
 }

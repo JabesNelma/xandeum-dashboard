@@ -1,0 +1,647 @@
+/* ---------------------------
+Theme variables (global)
+--------------------------- */
+body,
+.dashboard-container {
+--bg-page: #0f172a;
+--bg-card: #1e293b;
+--text-primary: #f1f5f9;
+--text-secondary: #cbd5e1;
+--border: #334155;
+--accent: #0ea5e9;
+--status-active: #10b981;
+--status-inactive: #ef4444;
+--muted: rgba(203,213,225,0.08);
+--card-shadow: 0 6px 18px rgba(2,6,23,0.6);
+--radius: 8px;
+}
+
+/* ---------------------------
+Base page / typography
+--------------------------- */
+body {
+background-color: var(--bg-page);
+color: var(--text-primary);
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure container contrasts against page if present */
+.dashboard-container {
+background: transparent;
+color: var(--text-primary);
+}
+
+/* Headings & core text */
+h1, h2, h3, h4, p, .text-primary {
+color: var(--text-primary);
+}
+
+p, .text-secondary {
+color: var(--text-secondary);
+line-height: 1.45;
+}
+
+/* Links */
+a {
+color: var(--accent);
+text-decoration: none;
+}
+a:hover, a:focus {
+text-decoration: underline;
+color: #7fe0ff;
+}
+
+/* Small muted text */
+.small, .muted, .hint {
+color: var(--text-secondary);
+opacity: 0.95;
+}
+
+/* Utility divider */
+hr, .divider {
+border: none;
+border-top: 1px solid var(--border);
+opacity: 0.9;
+}
+
+/* ---------------------------
+Card / Metric styling
+--------------------------- */
+.stat-card,
+.metric-card,
+.chart-container,
+.card,
+.container-card,
+.card-content {
+background-color: var(--bg-card);
+color: var(--text-primary);
+border: 1px solid var(--border);
+border-radius: var(--radius);
+box-shadow: var(--card-shadow);
+padding: 1rem;
+}
+
+/* Slightly lighter header area inside cards */
+.stat-card .card-header,
+.metric-card .card-header,
+.card .card-header {
+background: linear-gradient(0deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));
+border-bottom: 1px solid rgba(255,255,255,0.02);
+margin: -1rem -1rem 1rem -1rem;
+padding: 0.75rem 1rem;
+color: var(--text-secondary);
+}
+
+/* Metric numbers */
+.metric-card .value,
+.stat-card .value {
+color: var(--text-primary);
+font-variant-numeric: tabular-nums;
+font-weight: 600;
+font-size: 1.375rem;
+}
+
+/* Metric labels */
+.metric-card .label,
+.stat-card .label {
+color: var(--text-secondary);
+text-transform: uppercase;
+letter-spacing: 0.02em;
+font-size: 0.75rem;
+}
+
+/* Chart container: prefer transparent canvas area */
+.chart-container {
+padding: 0.5rem;
+}
+
+/* Recharts / SVG text & axis color overrides (best-effort) */
+.chart-container svg,
+.chart-container svg text,
+.chart-container .recharts-cartesian-axis-tick-value {
+color: var(--text-secondary);
+fill: var(--text-secondary);
+stroke: none;
+}
+.chart-container .recharts-cartesian-grid-line {
+stroke: rgba(255,255,255,0.03);
+}
+.chart-container .recharts-tooltip-wrapper {
+background: rgba(255,255,255,0.02);
+color: var(--text-primary);
+border: 1px solid var(--border);
+box-shadow: 0 6px 18px rgba(2,6,23,0.55);
+}
+
+/* ---------------------------
+Table styles
+--------------------------- */
+table,
+.node-table {
+width: 100%;
+background-color: transparent;
+border-collapse: collapse;
+color: var(--text-primary);
+border: 1px solid var(--border);
+border-radius: var(--radius);
+overflow: hidden;
+}
+
+/* Table head */
+table thead th,
+.node-table thead th,
+table thead td,
+.node-table thead td {
+background-color: rgba(255,255,255,0.10) !important;
+color: #FFFFFF !important;
+font-size: 0.85rem;
+font-weight: 600;
+text-transform: uppercase;
+letter-spacing: 0.04em;
+padding: 0.75rem 0.75rem;
+border-bottom: 1px solid var(--border);
+text-align: left;
+text-shadow: 0 1px 2px rgba(0,0,0,0.25) !important;
+}
+
+/* Table body cells */
+table tbody td,
+.node-table tbody td {
+background-color: rgba(255,255,255,0.01);
+color: rgba(255,255,255,0.95) !important;
+padding: 0.75rem;
+border-bottom: 1px solid rgba(255,255,255,0.02);
+vertical-align: middle;
+font-size: 0.95rem;
+} 
+
+/* Row hover /
+table tbody tr,
+.node-table tbody tr {
+transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+table tbody tr:hover,
+.node-table tbody tr:hover {
+background-color: rgba(14,165,233,0.03); / soft cyan tint */
+
+/* Selected / highlighted rows (if any) */
+table tbody tr.selected,
+.node-table tbody tr[data-selected="true"] {
+background-color: rgba(14,165,233,0.06);
+box-shadow: inset 0 0 0 1px rgba(14,165,233,0.06);
+}
+
+/* Th/td clickable actions */
+table th button,
+.node-table th button,
+table td button,
+.node-table td button {
+color: var(--text-primary);
+background: transparent;
+border: none;
+}
+
+/* Truncated monospace cells (e.g., pubkey/ip) */
+.node-table td.pubkey,
+.node-table td.ip,
+.node-table td.address {
+font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+color: var(--text-secondary);
+max-width: 16rem;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+/* ...existing code... */
+/* Table pagination / controls (strong overrides to ensure visibility) */
+.node-table-pagination,
+.table-controls,
+.table-footer,
+.node-table .pagination {
+  color: #FFFFFF !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.22) !important;
+  mix-blend-mode: normal !important;
+  -webkit-font-smoothing: antialiased !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+/* Buttons (visible even when disabled) - target Button component attribute */
+.node-table-pagination [data-slot="button"],
+.node-table-pagination button,
+.node-table .pagination [data-slot="button"],
+.node-table .pagination button,
+.table-controls [data-slot="button"],
+.table-controls button,
+.node-table .pagination .page-btn {
+  /* Use a light button surface with dark text for strong contrast */
+  background: rgba(255,255,255,0.94) !important;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important; /* For webkit browsers */
+  opacity: 1 !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  text-shadow: none !important; /* remove embossed white shadows */
+  mix-blend-mode: normal !important;
+  filter: none !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* Remove embossed pseudo-element/pseudo-shadow effects */
+.node-table-pagination [data-slot="button"]::before,
+.node-table-pagination [data-slot="button"]::after,
+.node-table-pagination button::before,
+.node-table-pagination button::after,
+.node-table-pagination [data-slot="button"] span::before,
+.node-table-pagination [data-slot="button"] span::after {
+  content: none !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+}
+
+/* Disabled states: keep readable but look disabled */
+.node-table-pagination [data-slot="button"]:disabled,
+.node-table-pagination button:disabled,
+.node-table .pagination [data-slot="button"]:disabled,
+.node-table .pagination button:disabled,
+.table-controls [data-slot="button"]:disabled,
+.table-controls button:disabled,
+.node-table .pagination .page-btn[aria-disabled="true"] {
+  opacity: 1 !important;
+  color: rgba(0,0,0,0.45) !important;
+  -webkit-text-fill-color: rgba(0,0,0,0.45) !important;
+  filter: none !important;
+  cursor: not-allowed;
+}
+
+/* Ensure SVG icons & inner nodes inherit text color (stroke/fill) */
+.node-table-pagination [data-slot="button"] svg,
+.node-table-pagination svg,
+.node-table .pagination svg,
+.node-table-pagination svg *,
+.node-table .pagination svg *,
+.node-table-pagination [data-slot="button"] * {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+  color: inherit !important;
+  opacity: 1 !important;
+}
+
+/* Force visible text even if button classes try to hide via text color vars */
+.node-table-pagination [data-slot="button"] > *:not(svg),
+.node-table-pagination [data-slot="button"],
+.node-table-pagination button > *:not(svg),
+.node-table-pagination button {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  text-shadow: none !important;
+}
+
+/* Add accessible focus ring for pagination buttons */
+.node-table-pagination [data-slot="button"]:focus-visible,
+.node-table-pagination button:focus-visible {
+  outline: 3px solid rgba(14,165,233,0.12) !important;
+  outline-offset: 2px !important;
+}
+
+/* Small tweak: make sure wrapper stands out on dark background */
+.node-table-pagination {
+  background: transparent !important;
+  padding: 0.2rem !important;
+}
+
+
+/* Subtitle (typing effect) */
+.subtitle {
+  color: rgba(255,255,255,0.95) !important;
+  font-weight: 500 !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.18) !important;
+}
+
+/* Header / Titles */
+h1, h2, h3, h4, .stats-title, .card-title {
+  color: #FFFFFF !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+/* Table headers / cells readability */
+table thead th,
+.node-table thead th {
+  background-color: rgba(255,255,255,0.10) !important;
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25) !important;
+}
+
+table tbody td,
+.node-table tbody td {
+  color: rgba(255,255,255,0.95) !important;
+  opacity: 1 !important;
+}
+
+/* Last updated / timestamp */
+.last-updated, .text-last-updated, p.text-sm {
+  color: rgba(255,255,255,0.8) !important;
+  font-size: 0.9em !important;
+}
+
+/* Stat numbers */
+.stat-value,
+.metric-card .value,
+.stat-card .value {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  font-size: 1.75rem !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+/* Global text rendering improvement */
+.dashboard-container * {
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+/* ...existing code... */
+
+/* ---------------------------
+Status badges
+--------------------------- */
+.status-active {
+background-color: var(--status-active);
+color: #001f13;
+border-radius: 999px;
+padding: 0.18rem 0.6rem;
+font-weight: 600;
+font-size: 0.8rem;
+display: inline-flex;
+align-items: center;
+gap: 0.4rem;
+box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+}
+
+.status-inactive {
+background-color: var(--status-inactive);
+color: #fff;
+border-radius: 999px;
+padding: 0.18rem 0.6rem;
+font-weight: 600;
+font-size: 0.8rem;
+display: inline-flex;
+align-items: center;
+gap: 0.4rem;
+box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+}
+
+/* Generic status dot (small circle next to status) */
+.status-dot {
+width: 0.6rem;
+height: 0.6rem;
+border-radius: 50%;
+display: inline-block;
+box-shadow: 0 0 0 3px rgba(255,255,255,0.02);
+}
+.status-dot.active { background: var(--status-active); }
+.status-dot.inactive { background: var(--status-inactive); }
+
+/* ---------------------------
+Buttons & controls
+--------------------------- */
+button,
+.btn,
+.refresh-btn {
+background-color: rgba(255,255,255,0.02);
+color: var(--text-primary);
+border: 1px solid var(--border);
+padding: 0.5rem 0.75rem;
+border-radius: 6px;
+cursor: pointer;
+transition: background-color 120ms ease, transform 80ms ease, box-shadow 120ms ease;
+font-weight: 600;
+}
+
+/* Primary / accent action */
+button.primary,
+.btn.primary {
+background: linear-gradient(180deg, rgba(14,165,233,0.09), rgba(14,165,233,0.06));
+border-color: rgba(14,165,233,0.3);
+color: var(--accent);
+}
+
+/* Hover & active states */
+button:hover,
+.btn:hover,
+.refresh-btn:hover {
+background-color: rgba(14,165,233,0.04);
+transform: translateY(-1px);
+}
+button:active,
+.btn:active,
+.refresh-btn:active {
+transform: translateY(0);
+}
+
+/* Disabled */
+button:disabled,
+.btn:disabled {
+opacity: 0.45;
+cursor: not-allowed;
+filter: grayscale(0.05);
+}
+
+/* Focus accessibility */
+button:focus-visible,
+.btn:focus-visible,
+.refresh-btn:focus-visible,
+input:focus-visible,
+.select:focus-visible,
+.search-box:focus-visible {
+outline: 3px solid rgba(14,165,233,0.22);
+outline-offset: 2px;
+box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+}
+
+/* ---------------------------
+Form elements
+--------------------------- */
+input,
+textarea,
+select,
+.search-box {
+background-color: var(--bg-card);
+color: var(--text-primary);
+border: 1px solid var(--border);
+padding: 0.5rem 0.6rem;
+border-radius: 6px;
+transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+input::placeholder,
+.search-box::placeholder,
+textarea::placeholder {
+color: rgba(203,213,225,0.66);
+}
+
+/* Input hover/focus */
+input:hover,
+textarea:hover,
+select:hover,
+.search-box:hover {
+border-color: rgba(255,255,255,0.08);
+}
+input:focus,
+textarea:focus,
+select:focus,
+.search-box:focus {
+border-color: var(--accent);
+box-shadow: 0 6px 18px rgba(14,165,233,0.06);
+}
+
+/* Form labels */
+label {
+color: var(--text-secondary);
+font-size: 0.9rem;
+}
+
+/* Specialized search box */
+.search-box {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+/* ---------------------------
+Header / Footer
+--------------------------- */
+header,
+footer {
+background: rgba(255,255,255,0.01);
+color: var(--text-primary);
+border-bottom: 1px solid rgba(255,255,255,0.02);
+border-top: 1px solid rgba(255,255,255,0.02);
+padding: 0.75rem 1rem;
+}
+
+/* Header title */
+header .title,
+header h1 {
+color: var(--text-primary);
+font-weight: 700;
+}
+
+/* Small header actions */
+header .actions,
+footer .actions {
+display: flex;
+gap: 0.5rem;
+align-items: center;
+}
+
+/* ---------------------------
+Accessibility / helpers
+--------------------------- /
+/ Ensures clickable controls remain visible in dark theme */
+[role="button"],
+[role="link"] {
+color: var(--text-primary);
+}
+
+/* Focus ring for keyboard navigation */
+:focus {
+outline: none;
+}
+:focus-visible {
+outline: 3px solid rgba(14,165,233,0.22);
+outline-offset: 2px;
+}
+
+/* Reduce motion precaution */
+@media (prefers-reduced-motion: reduce) {
+  html, body, * {
+    transition: none !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+/* ---------------------------
+Small layout / utility classes
+--------------------------- /
+/ Provide an unobtrusive border utility for containers */
+.u-border {
+border: 1px solid var(--border);
+border-radius: 6px;
+}
+
+/* Soft background utility for panels */
+.u-panel {
+background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));
+border: 1px solid var(--border);
+padding: 0.75rem;
+color: var(--text-primary);
+}
+
+/* Accent small text */
+.u-accent {
+color: var(--accent);
+}
+
+/* Button-like small link */
+.link-btn {
+background: transparent;
+border: 1px solid var(--border);
+color: var(--text-primary);
+padding: 0.3rem 0.5rem;
+border-radius: 6px;
+}
+
+/* ---------------------------
+Fine-grain adjustments for components that may use other frameworks
+(e.g., Tailwind utility classes / Radix / Headless UI)
+--------------------------- /
+/ Card content areas */
+.card .content,
+.stat-card .content {
+background: transparent;
+color: var(--text-primary);
+}
+
+/* Tables with custom classes */
+.table,
+.table-responsive,
+.node-table {
+background: transparent;
+color: var(--text-primary);
+}
+
+/* Ensure dropdowns / selects use dark background */
+select, .select {
+background-color: var(--bg-card);
+color: var(--text-primary);
+}
+
+/* Ensure tooltips remain legible */
+.tooltip,
+.tooltip-content {
+background: rgba(2,6,23,0.9);
+color: var(--text-primary);
+border: 1px solid var(--border);
+box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+padding: 0.4rem 0.6rem;
+border-radius: 6px;
+}
+
+/* ---------------------------
+Final note:
+This stylesheet is intentionally specific to override typical light-theme rules
+while avoiding !important. If a particular component remains styled by an
+inline inline style or a more specific rule in your codebase, increasing
+selector specificity (e.g., prefixing with .dashboard-container) will usually
+resolve it without resorting to !important.
+--------------------------- */
