@@ -4,6 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { XandeumPNode } from "@/types/xandeum";
+import { useEffect, useState } from 'react';
 
 interface NodeChartsProps {
   data: { name: string; count: number }[];
@@ -11,6 +12,12 @@ interface NodeChartsProps {
 }
 
 export function NodeCharts({ data, nodes }: NodeChartsProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Prepare uptime data for top 5 nodes
   const uptimeData = nodes
     .filter(node => node.uptime && node.uptime > 0)
@@ -24,6 +31,33 @@ export function NodeCharts({ data, nodes }: NodeChartsProps) {
   // Colors for pie chart
   const COLORS = ['#10b981', '#ef4444', '#f59e0b']; // green, red, amber
 
+  if (!mounted) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Node Status Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80 flex items-center justify-center bg-slate-50 rounded">
+              <div className="text-slate-500">Loading chart...</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Top 5 Nodes by Uptime</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80 flex items-center justify-center bg-slate-50 rounded">
+              <div className="text-slate-500">Loading chart...</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Node Status Distribution - Pie Chart */}
@@ -32,8 +66,8 @@ export function NodeCharts({ data, nodes }: NodeChartsProps) {
           <CardTitle>Node Status Distribution</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-80" role="img" aria-label="Node status distribution pie chart">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-80 w-full" role="img" aria-label="Node status distribution pie chart">
+            <ResponsiveContainer width="100%" height={320}>
               <PieChart>
                 <Pie
                   data={data}
@@ -73,8 +107,8 @@ export function NodeCharts({ data, nodes }: NodeChartsProps) {
           <CardTitle>Top 5 Nodes by Uptime</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-80" role="img" aria-label="Top 5 nodes by uptime chart">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-80 w-full" role="img" aria-label="Top 5 nodes by uptime chart">
+            <ResponsiveContainer width="100%" height={320}>
               <BarChart data={uptimeData} layout="horizontal" margin={{ left: 20, right: 20, top: 10, bottom: 10 }}>
                 <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
                 <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} width={60} />

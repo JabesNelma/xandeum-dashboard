@@ -1,9 +1,8 @@
 // src/app/page.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fetchPNodes } from "@/lib/xandeum-service";
 import { XandeumPNode } from "@/types/xandeum";
 import { NodeTable } from "@/components/nodes/node-table";
-import { NodeCharts } from "./node-charts"; // Impor komponen baru untuk grafik
+import { NodeCharts } from "./node-charts";
 import { MetricCards } from '@/components/ui/metric-cards';
 import { TypingEffect } from '@/components/ui/typing-effect';
 import { RefreshButton } from '@/components/ui/refresh-button';
@@ -17,35 +16,22 @@ const calculateStats = (nodes: XandeumPNode[]) => {
   return { totalNodes, activeNodes, inactiveNodes };
 };
 
-export default async function DashboardPage() {
-  let nodes: XandeumPNode[] = [];
-  let stats = { totalNodes: 0, activeNodes: 0, inactiveNodes: 0 };
-  let chartData: { name: string; count: number }[] = [];
-  let hadError = false;
-  let lastUpdated = new Date().toLocaleString();
+export default function DashboardPage() {
+  // Use static mock data for build time
+  const nodes = generateMockData();
+  const stats = calculateStats(nodes);
+  const lastUpdated = new Date().toLocaleString();
 
-  try {
-    nodes = await fetchPNodes();
-    stats = calculateStats(nodes);
+  // Prepare chart data
+  const statusCounts = nodes.reduce((acc, node) => {
+    acc[node.status] = (acc[node.status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
-    // Siapkan data grafik di server
-    const statusCounts = nodes.reduce((acc, node) => {
-      acc[node.status] = (acc[node.status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    chartData = Object.entries(statusCounts).map(([status, count]) => ({
-      name: status.charAt(0).toUpperCase() + status.slice(1),
-      count: count,
-    }));
-  } catch (error) {
-    console.error("Failed to load dashboard data", error);
-    hadError = true;
-    // Use mock data if API fails
-    nodes = generateMockData();
-    stats = calculateStats(nodes);
-    lastUpdated = new Date().toLocaleString();
-  }
+  const chartData = Object.entries(statusCounts).map(([status, count]) => ({
+    name: status.charAt(0).toUpperCase() + status.slice(1),
+    count: count,
+  }));
 
   return (
     <div className="container mx-auto py-12">
@@ -81,11 +67,9 @@ export default async function DashboardPage() {
       </div>
 
       {/* Render komponen grafik sebagai Client Component */}
-      {hadError ? (
-        <div className="mb-6 p-4 bg-amber-50 border border-amber-100 text-amber-800 rounded-md">
-          Using mock data - connection to pRPC failed. Please check server configuration.
-        </div>
-      ) : null}
+      <div className="mb-6 p-4 bg-blue-50 border border-blue-100 text-blue-800 rounded-md">
+        Dashboard is using static data for demonstration. In production, this would connect to live pRPC endpoints.
+      </div>
       
       <NodeCharts data={chartData} nodes={nodes} />
 

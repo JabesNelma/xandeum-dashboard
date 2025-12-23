@@ -1,7 +1,9 @@
 import { XandeumPNode } from '@/types/xandeum';
+import { generateMockData } from './mockData';
 
 // Gunakan variabel lingkungan untuk mendapatkan URL dasar API internal
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 
+  (typeof window === 'undefined' ? '' : 'http://localhost:3000');
 
 interface FetchNodesOptions {}
 
@@ -18,14 +20,23 @@ export async function fetchPNodes(options: FetchNodesOptions = {}): Promise<Xand
 
     console.log('DEBUG: Fetching nodes from internal API:', url.toString());
 
-    const response = await fetch(url.toString(), {
-      method: 'POST', // API route kita hanya menerima POST
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // Kita bisa mengirim body jika API route kita memerlukan parameter
-      // body: JSON.stringify({ ...options }),
-    });
+    const fetchUrl = url.toString();
+
+// Untuk development, tetap pakai POST
+// Untuk production/build, bisa pakai GET atau handle berbeda
+const response = await fetch(fetchUrl, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+});
+
+  if (!response.ok) {
+    // Saat build, return mock data
+    if (process.env.NODE_ENV === 'production' || typeof window === 'undefined') {
+      console.log('Using mock data during build');
+      return generateMockData();
+    }
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
 
     if (!response.ok) {
       // Jika API route mengembalikan error, tangani di sini
